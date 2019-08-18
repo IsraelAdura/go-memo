@@ -9,13 +9,10 @@ type memo struct {
 	Result  interface{}
 }
 
-// CacheMap type
-type cacheMap map[string]*memo
-
 // Cache map to hold all the cached values
-var Cache = make(cacheMap)
+var Cache = make(map[string]*memo)
 
-// Memoize accepts a cacheKey,a function to execture and an expiry period
+// Memoize accepts a cacheKey,a function to execute and an expiry period
 // check if cache key already exists in the map i.e call is already memoized
 // if it has expired or does not exist the function is executed
 // and its result and set expiration time stored in the cache
@@ -48,4 +45,13 @@ func ClearCache() {
 	for cacheKey := range Cache {
 		delete(Cache, cacheKey)
 	}
+}
+
+// Get value
+func Get(cacheKey string) interface{} {
+	memoized := Cache[cacheKey]
+	if memoized != nil && memoized.Expires.After(time.Now()) {
+		return memoized.Result
+	}
+	return nil
 }
