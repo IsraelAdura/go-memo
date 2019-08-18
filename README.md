@@ -18,33 +18,41 @@ import (
 )
 
 func main() {
-	memoize.Memoize("cache-key", func() interface{} {
-		result := callthis("foo")
-		return result
+	// memoize for 60secs
+	foo := memoize.Memoize("cache-foo", func() interface{} {
+		return foobar("foo")
 	}, 60)
 
-	memoize.Memoize("cache-key2", func() interface{} {
-		result := callthis("bar")
-		return result
+	// memoize for 20secs
+	bar := memoize.Memoize("cache-bar", func() interface{} {
+		return foobar("bar")
 	}, 20)
 
-	result := memoize.Get("cache-key")
-	result2 := memoize.Get("cache-key2")
-    
-	fmt.Println(result)
-	fmt.Println(result2)
+	fmt.Println(foo) // foo
+	fmt.Println(foo) // prints cached result //foo
 
-    memoize.UnMemoize("cache-key")
-    fmt.Println(result)
-    
-    memoize.clearCache()
-    fmt.Println(result2)
+	fmt.Println(bar) // bar
+	fmt.Println(bar) // prints cached result //bar
+
+	result := memoize.Get("cache-foo")
+	fmt.Println(result) // foo
+
+	memoize.UnMemoize("cache-foo")
+	foo = memoize.Get("cache-foo")
+	bar = memoize.Get("cache-bar")
+	fmt.Println(foo) // nil
+	fmt.Println(bar) // bar
+
+	memoize.ClearCache()
+	foo = memoize.Get("cache-foo")
+	bar = memoize.Get("cache-bar")
+	fmt.Println(foo) // nil
+	fmt.Println(bar) // nil
 }
 
-func callthis(x string) string {
+func foobar(x string) string {
 	return x
 }
-
 ```
 
 ## Contributing
